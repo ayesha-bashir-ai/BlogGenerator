@@ -1,0 +1,14 @@
+// cd ai-blogger-backend
+// npm run dev
+
+//  cd frontend
+//  npm run dev
+
+
+//  What URL to put — 2 situations
+// 💻
+// Local development (right now)
+// window.AI_BLOGGER_API = 'http://localhost:5000/api/v1';
+// 🚀
+// After deploying to Railway / Render
+// window.AI_BLOGGER_API = 'https://your-app.railway.app/api/v1';

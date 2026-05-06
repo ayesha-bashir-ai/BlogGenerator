@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Blogger — Create High-Quality Blogs in Seconds with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="js/auth.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --pu:#6C63FF;--pu2:#8B85FF;--pu3:#3D35CC;
+    --bl:#4F9EFF;--bl2:#2B7DE9;
+    --wh:#fff;--bg:#F8F7FF;--bg2:#EEF0FF;
+    --tx:#1A1A2E;--tx2:#4A4A68;--tx3:#8888AA;
+    --card:#fff;--border:rgba(108,99,255,0.15);
+    --shadow:0 4px 24px rgba(108,99,255,0.10);
+  }
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);line-height:1.6}
+
+  /* DARK MODE */
+  .dark-mode{
+    --bg:#0D0B1E;--bg2:#12102A;--card:#1A1730;
+    --tx:#F0EEFF;--tx2:#B0AADD;--tx3:#6A6490;
+    --border:rgba(108,99,255,0.25);--shadow:0 4px 24px rgba(0,0,0,0.4);
+    --wh:#1A1730;
+  }
+
+  /* ── NAVBAR ─────────────────────────────────────────── */
+  .navbar{position:sticky;top:0;z-index:100;background:rgba(248,247,255,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 5%}
+  .dark-mode .navbar{background:rgba(13,11,30,0.85)}
+  .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--pu),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer}
+  .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--pu),var(--bl));border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .logo-icon svg{-webkit-text-fill-color:initial}
+  .nav-links{display:flex;gap:28px;list-style:none}
+  .nav-links a{text-decoration:none;color:var(--tx2);font-size:14px;font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--pu)}
+  .nav-btns{display:flex;gap:10px;align-items:center}
+  .btn-ghost{padding:8px 18px;border:1.5px solid var(--border);border-radius:8px;background:transparent;color:var(--tx);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center}
+  .btn-ghost:hover{border-color:var(--pu);color:var(--pu)}
+  .btn-primary{padding:8px 20px;background:linear-gradient(135deg,var(--pu),var(--bl));border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center}
+  .btn-primary:hover{opacity:.88;transform:translateY(-1px)}
+  .dark-toggle{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:transparent;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .dark-toggle:hover{background:var(--bg2)}
+
+  /* ── USER MENU (logged in state) ─────────────────────── */
+  #navUserMenu{display:none;align-items:center;gap:10px}
+  .user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pu),var(--bl));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+  .user-greeting{font-size:13px;color:var(--tx2)}
+  .user-greeting strong{color:var(--tx);font-weight:600}
+  #navDashBtn{display:none}
+  #navLogoutBtn{padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;background:transparent;color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+  #navLogoutBtn:hover{border-color:#EF4444;color:#EF4444}
+
+  /* ── SECTIONS ────────────────────────────────────────── */
+  section{padding:80px 5%}
+  .container{max-width:1200px;margin:0 auto}
+  .section-tag{display:inline-block;padding:6px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;color:var(--pu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+  .section-title{font-size:clamp(28px,4vw,42px);font-weight:800;line-height:1.2;margin-bottom:16px}
+  .section-sub{font-size:16px;color:var(--tx2);max-width:560px;margin:0 auto 48px}
+  .text-center{text-align:center}
+  .grad-text{background:linear-gradient(135deg,var(--pu),var(--bl));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+  /* ── HERO ────────────────────────────────────────────── */
+  .hero{padding:100px 5% 80px;overflow:hidden;position:relative}
+  .hero-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35}
+  .orb1{width:400px;height:400px;background:var(--pu);top:-100px;left:-100px}
+  .orb2{width:300px;height:300px;background:var(--bl);top:100px;right:-80px}
+  .orb3{width:250px;height:250px;background:#FF6B9D;bottom:-50px;left:40%}
+  .hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(108,99,255,.12);border:1px solid rgba(108,99,255,.3);border-radius:20px;font-size:13px;font-weight:500;color:var(--pu);margin-bottom:20px}
+  .hero h1{font-size:clamp(32px,4.5vw,54px);font-weight:800;line-height:1.15;margin-bottom:20px}
+  .hero-sub{font-size:17px;color:var(--tx2);margin-bottom:36px;line-height:1.7}
+  .hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+  .btn-lg{padding:14px 28px;font-size:16px;font-weight:600;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .22s;border:none}
+  .btn-lg.primary{background:linear-gradient(135deg,var(--pu),var(--bl));color:#fff}
+  .btn-lg.primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.35)}
+  .btn-lg.outline{background:transparent;border:2px solid var(--border);color:var(--tx)}
+  .btn-lg.outline:hover{border-color:var(--pu);color:var(--pu);transform:translateY(-2px)}
+  .hero-stats{display:flex;gap:28px;margin-top:36px}
+  .hero-stat{text-align:center}
+  .hero-stat .num{font-size:22px;font-weight:800;color:var(--pu)}
+  .hero-stat .lbl{font-size:12px;color:var(--tx3)}
+
+  /* ── AUTH GATE BANNER ────────────────────────────────── */
+  .auth-banner{display:none;align-items:center;gap:12px;padding:12px 20px;background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.2);border-radius:12px;margin-top:20px;font-size:14px;color:var(--tx2)}
+  .auth-banner.show{display:flex}
+  .auth-banner a{color:var(--pu);font-weight:600;text-decoration:none}
+  .auth-banner a:hover{text-decoration:underline}
+
+  /* ── HERO ILLUSTRATION ───────────────────────────────── */
+  .hero-illustration{display:flex;justify-content:center;align-items:center}
+  .laptop-frame{width:100%;max-width:480px;background:var(--card);border:1.5px solid var(--border);border-radius:20px;box-shadow:var(--shadow),0 0 0 1px var(--border);overflow:hidden;position:relative}
+  .laptop-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:6px}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .dot-r{background:#FF5F57}.dot-y{background:#FFBD2E}.dot-g{background:#28CA41}
+  .laptop-url{flex:1;text-align:center;font-size:12px;color:var(--tx3);background:var(--bg);border-radius:6px;padding:3px 10px;margin:0 10px}
+  .laptop-body{padding:20px}
+  .ai-writing-area{background:var(--bg2);border-radius:12px;padding:16px;margin-bottom:12px;min-height:140px;position:relative}
+  .writing-line{height:10px;border-radius:6px;background:linear-gradient(90deg,var(--pu),var(--bl));margin-bottom:8px;animation:pulse-bar 2s ease-in-out infinite}
+  .writing-line:nth-child(2){width:85%;animation-delay:.3s}
+  .writing-line:nth-child(3){width:70%;animation-delay:.6s}
+  .writing-line:nth-child(4){width:90%;animation-delay:.9s}
+  .writing-line:nth-child(5){width:60%;animation-delay:1.2s}
+  .cursor-blink{display:inline-block;width:2px;height:14px;background:var(--pu);animation:blink 1s step-end infinite;vertical-align:middle}
+  @keyframes pulse-bar{0%,100%{opacity:.5}50%{opacity:1}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .ai-robot{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .robot-head{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--pu),var(--bl));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .robot-msg{flex:1;background:var(--bg);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--tx2)}
+  .gen-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(40,202,65,.12);border-radius:20px;font-size:12px;font-weight:600;color:#28CA41}
+  .dot-blink{width:6px;height:6px;border-radius:50%;background:#28CA41;animation:blink 1s step-end infinite}
+
+  /* ── FEATURES ────────────────────────────────────────── */
+  .features-bg{background:var(--bg2)}
+  .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:48px}
+  .feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .25s;cursor:default}
+  .feat-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(108,99,255,.15);border-color:rgba(108,99,255,.4)}
+  .feat-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(108,99,255,.15),rgba(79,158,255,.15));display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
+  .feat-card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+  .feat-card p{font-size:14px;color:var(--tx2);line-height:1.6}
+
+  /* ── DEMO ────────────────────────────────────────────── */
+  .demo-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;box-shadow:var(--shadow);max-width:700px;margin:48px auto 0}
+  .demo-label{font-size:13px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .demo-input{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--bg2);color:var(--tx);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s;margin-bottom:16px}
+  .demo-input:focus{border-color:var(--pu)}
+  .dark-mode .demo-input{background:#12102A}
+  .demo-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;margin-bottom:20px}
+  .demo-select{padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--bg2);color:var(--tx);font-size:15px;font-family:inherit;outline:none;cursor:pointer;width:100%}
+  .dark-mode .demo-select{background:#12102A}
+  .demo-output{background:var(--bg2);border-radius:12px;padding:20px;min-height:120px;font-size:14px;color:var(--tx2);line-height:1.8;position:relative;margin-top:16px;display:none}
+  .demo-output.active{display:block}
+  .typing-indicator{display:inline-flex;gap:4px;align-items:center}
+  .typing-dot{width:6px;height:6px;border-radius:50%;background:var(--pu);animation:typing 1.2s ease-in-out infinite}
+  .typing-dot:nth-child(2){animation-delay:.2s}
+  .typing-dot:nth-child(3){animation-delay:.4s}
+  @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+  /* demo CTA after output */
+  .demo-cta{display:none;margin-top:16px;padding:16px;background:rgba(108,99,255,.06);border:1px solid rgba(108,99,255,.2);border-radius:12px;text-align:center}
+  .demo-cta.show{display:block}
+  .demo-cta p{font-size:14px;color:var(--tx2);margin-bottom:10px}
+
+  /* ── STATS ───────────────────────────────────────────── */
+  .stats-section{background:linear-gradient(135deg,var(--pu),var(--bl))}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center}
+  .stat-card .emoji{font-size:32px;margin-bottom:12px}
+  .stat-num{font-size:clamp(28px,4vw,44px);font-weight:800;color:#fff;line-height:1}
+  .stat-lbl{font-size:14px;color:rgba(255,255,255,.75);margin-top:6px}
+
+  /* ── PRICING ─────────────────────────────────────────── */
+  .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:48px}
+  .price-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;transition:all .25s;position:relative}
+  .price-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(108,99,255,.18)}
+  .price-card.popular{border:2px solid var(--pu);box-shadow:0 0 0 4px rgba(108,99,255,.08)}
+  .popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--pu),var(--bl));color:#fff;font-size:12px;font-weight:700;padding:5px 18px;border-radius:20px;white-space:nowrap}
+  .plan-name{font-size:18px;font-weight:700;margin-bottom:6px}
+  .plan-price{font-size:42px;font-weight:800;margin:16px 0 4px;line-height:1}
+  .plan-price span{font-size:16px;font-weight:400;color:var(--tx3)}
+  .plan-features{list-style:none;margin:20px 0 28px}
+  .plan-features li{padding:8px 0;font-size:14px;color:var(--tx2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .plan-features li::before{content:"✓";color:var(--pu);font-weight:700;font-size:14px}
+  .btn-plan{width:100%;padding:12px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+  .btn-plan.outline{background:transparent;border:2px solid var(--border);color:var(--tx)}
+  .btn-plan.outline:hover{border-color:var(--pu);color:var(--pu)}
+  .btn-plan.filled{background:linear-gradient(135deg,var(--pu),var(--bl));border:none;color:#fff}
+  .btn-plan.filled:hover{opacity:.88;transform:translateY(-1px)}
+
+  /* ── TESTIMONIALS ────────────────────────────────────── */
+  .testimonials-bg{background:var(--bg2)}
+  .testi-slider{max-width:680px;margin:48px auto 0;position:relative;overflow:hidden}
+  .testi-track{display:flex;transition:transform .5s ease}
+  .testi-card{min-width:100%;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;box-shadow:var(--shadow)}
+  .stars{font-size:20px;margin-bottom:16px;letter-spacing:2px}
+  .testi-text{font-size:17px;font-style:italic;color:var(--tx2);line-height:1.7;margin-bottom:20px}
+  .testi-author{font-size:15px;font-weight:600;color:var(--tx)}
+  .testi-dots{display:flex;justify-content:center;gap:8px;margin-top:20px}
+  .testi-dot{width:8px;height:8px;border-radius:50%;background:var(--border);cursor:pointer;transition:all .2s}
+  .testi-dot.active{width:24px;background:var(--pu)}
+
+  /* ── BLOG CARDS ──────────────────────────────────────── */
+  .blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px}
+  .blog-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .25s;cursor:pointer}
+  .blog-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(108,99,255,.15)}
+  .blog-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:48px}
+  .blog-body{padding:20px}
+  .blog-tag{display:inline-block;padding:3px 10px;background:rgba(108,99,255,.1);border-radius:10px;font-size:12px;font-weight:600;color:var(--pu);margin-bottom:10px}
+  .blog-card h3{font-size:16px;font-weight:700;margin-bottom:8px;line-height:1.4}
+  .blog-card p{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:16px}
+  .read-more{font-size:13px;font-weight:600;color:var(--pu);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:gap .2s}
+  .read-more:hover{gap:8px}
+
+  /* ── FAQ ─────────────────────────────────────────────── */
+  .faq-list{max-width:700px;margin:48px auto 0}
+  .faq-item{border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;transition:all .2s}
+  .faq-item.open{border-color:rgba(108,99,255,.4)}
+  .faq-q{padding:18px 22px;font-size:16px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--card);user-select:none}
+  .faq-chevron{transition:transform .3s;font-size:18px;color:var(--tx3)}
+  .faq-item.open .faq-chevron{transform:rotate(180deg)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;background:var(--card);color:var(--tx2);font-size:14px;line-height:1.7;padding:0 22px}
+  .faq-item.open .faq-a{max-height:200px;padding:0 22px 18px}
+
+  /* ── CONTACT ─────────────────────────────────────────── */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:48px}
+  .contact-info h3{font-size:22px;font-weight:700;margin-bottom:16px}
+  .contact-info p{font-size:15px;color:var(--tx2);margin-bottom:24px;line-height:1.7}
+  .contact-detail{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:14px;color:var(--tx2)}
+  .contact-icon{width:38px;height:38px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .contact-form-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;box-shadow:var(--shadow)}
+  .form-group{margin-bottom:16px}
+  .form-label{font-size:13px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:8px}
+  .form-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--tx);font-size:15px;font-family:inherit;outline:none;transition:border-color .2s}
+  .form-input:focus{border-color:var(--pu)}
+  .dark-mode .form-input{background:#12102A}
+  textarea.form-input{resize:vertical;min-height:100px}
+  .map-box{background:linear-gradient(135deg,rgba(108,99,255,.08),rgba(79,158,255,.08));border:1px solid var(--border);border-radius:14px;height:200px;display:flex;align-items:center;justify-content:center;margin-top:20px;flex-direction:column;gap:10px;font-weight:600;color:var(--tx3);font-size:14px}
+
+  /* ── ABOUT ───────────────────────────────────────────── */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+  .about-dashboard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .dash-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+  .dash-mini{background:var(--bg2);border-radius:10px;padding:14px;text-align:center}
+  .dash-mini .dm-num{font-size:20px;font-weight:800;color:var(--pu)}
+  .dash-mini .dm-lbl{font-size:11px;color:var(--tx3)}
+  .dash-bar-area{background:var(--bg2);border-radius:10px;padding:14px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .bar-label{font-size:11px;color:var(--tx2);width:60px;flex-shrink:0}
+  .bar-track{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pu),var(--bl))}
+  .about-list{list-style:none;margin-top:24px}
+  .about-list li{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;font-size:15px;color:var(--tx2)}
+  .about-list .check{width:24px;height:24px;border-radius:50%;background:rgba(108,99,255,.12);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;color:var(--pu);font-weight:700}
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  .footer{background:var(--tx);padding:60px 5% 32px}
+  .dark-mode .footer{background:#0A0818}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;max-width:1200px;margin:0 auto 40px}
+  .footer-logo{font-size:22px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .footer-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:20px}
+  .social-row{display:flex;gap:10px}
+  .social-btn{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all .2s}
+  .social-btn:hover{background:var(--pu)}
+  .footer-col h4{color:#fff;font-size:14px;font-weight:700;margin-bottom:16px}
+  .footer-col ul{list-style:none}
+  .footer-col li{margin-bottom:10px}
+  .footer-col a{text-decoration:none;font-size:14px;color:rgba(255,255,255,.5);transition:color .2s}
+  .footer-col a:hover{color:#fff}
+  .footer-bottom{max-width:1200px;margin:0 auto;border-top:1px solid rgba(255,255,255,.08);padding-top:24px;text-align:center;font-size:13px;color:rgba(255,255,255,.35)}
+
+  /* ── SCROLL ANIMATION ────────────────────────────────── */
+  .fade-up{opacity:0;transform:translateY(32px);transition:opacity .6s ease,transform .6s ease}
+  .fade-up.visible{opacity:1;transform:translateY(0)}
+
+  /* ── RESPONSIVE ──────────────────────────────────────── */
+  @media(max-width:768px){
+    .hero-inner{grid-template-columns:1fr}
+    .about-grid{grid-template-columns:1fr}
+    .contact-grid{grid-template-columns:1fr}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .footer-grid{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .hero-stats{flex-wrap:wrap;gap:16px}
+    .user-greeting{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="nav-inner">
+
+    <!-- Logo -->
+    <a href="index.html" class="logo">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 14L7 6L9 10L12 5L15 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      AI Blogger
+    </a>
+
+    <!-- Nav links -->
+    <ul class="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#blog">Blog</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <!-- Right side buttons -->
+    <div class="nav-btns">
+      <!-- Dark mode toggle -->
+      <button class="dark-toggle" id="darkBtn" title="Toggle dark mode">🌙</button>
+
+      <!-- LOGGED OUT: show Login + Sign Up -->
+      <a href="login.html" class="btn-ghost" id="navLoginBtn">Login</a>
+      <a href="login.html?tab=signup" class="btn-primary" id="navSignupBtn">Sign Up</a>
+
+      <!-- LOGGED IN: show Dashboard + user greeting + logout -->
+      <a href="dashboard.html" class="btn-primary" id="navDashBtn" style="display:none">
+        Dashboard →
+      </a>
+      <div id="navUserMenu" style="display:none;align-items:center;gap:10px">
+        <div class="user-avatar" id="navAvatar">?</div>
+        <span class="user-greeting">Hi, <strong id="navUserName">there</strong></span>
+        <button id="navLogoutBtn">Logout</button>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">
+        <span>✨</span> AI-Powered Content Generation
+      </div>
+      <h1>Create High-Quality <span class="grad-text">Blogs in Seconds</span> with AI</h1>
+      <p class="hero-sub">Generate SEO-optimized blog posts instantly using AI technology. Save hours of writing time and publish more content faster than ever.</p>
+
+      <div class="hero-btns">
+        <!-- Primary CTA — gated: requires login -->
+        <button class="btn-lg primary" id="heroStartBtn"
+                onclick="Auth.gatedClick('generate.html','Create a free account to start generating AI blogs!')">
+          Start Writing Free →
+        </button>
+        <!-- Demo button — public, just scrolls down -->
+        <button class="btn-lg outline"
+                onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
+          ▶ Try AI Demo
+        </button>
+      </div>
+
+      <!-- Auth hint banner — shows only when NOT logged in -->
+      <div class="auth-banner" id="authBanner">
+        <span>🔒</span>
+        <span>Free forever · No credit card needed ·
+          <a href="login.html?tab=signup">Create your account in 30 seconds</a>
+        </span>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">10K+</div><div class="lbl">Active Users</div></div>
+        <div class="hero-stat"><div class="num">250K</div><div class="lbl">Blogs Created</div></div>
+        <div class="hero-stat"><div class="num">4.9★</div><div class="lbl">User Rating</div></div>
+      </div>
+    </div>
+
+    <div class="hero-illustration fade-up">
+      <div class="laptop-frame">
+        <div class="laptop-bar">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+          <span class="laptop-url">app.aiblogger.io</span>
+        </div>
+        <div class="laptop-body">
+          <div class="ai-robot">
+            <div class="robot-head">🤖</div>
+            <div class="robot-msg">Writing your blog about <strong>AI in Marketing</strong>...</div>
+          </div>
+          <div class="ai-writing-area">
+            <div class="writing-line" style="width:95%"></div>
+            <div class="writing-line" style="width:85%"></div>
+            <div class="writing-line" style="width:75%"></div>
+            <div class="writing-line" style="width:90%"></div>
+            <div class="writing-line" style="width:65%"></div>
+            <div style="margin-top:8px;font-size:13px;color:#6C63FF">Generating<span class="cursor-blink"></span></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+            <div class="gen-badge"><div class="dot-blink"></div> AI Writing...</div>
+            <span style="font-size:12px;color:var(--tx3)">SEO Score: 94/100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ABOUT ───────────────────────────────────────────── -->
+<section style="background:var(--bg)">
+  <div class="container">
+    <div class="about-grid">
+      <div class="fade-up">
+        <div class="section-tag">About Platform</div>
+        <h2 class="section-title">What is <span class="grad-text">AI Blogger?</span></h2>
+        <p style="font-size:16px;color:var(--tx2);line-height:1.8;margin-bottom:20px">AI Blogger is an intelligent content generation platform that helps bloggers, marketers, and businesses create high-quality blog posts using artificial intelligence.</p>
+        <ul class="about-list">
+          <li><span class="check">✓</span><span><strong>AI Content Automation</strong> — Write full articles on any topic with a single click</span></li>
+          <li><span class="check">✓</span><span><strong>SEO Optimization</strong> — Every article is automatically optimized for search engines</span></li>
+          <li><span class="check">✓</span><span><strong>Fast Generation</strong> — Get complete blog posts in under 30 seconds</span></li>
+          <li><span class="check">✓</span><span><strong>Easy Editing Tools</strong> — Refine and customize AI content with our intuitive editor</span></li>
+        </ul>
+      </div>
+      <div class="about-dashboard fade-up">
+        <div style="font-size:13px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px">Dashboard Overview</div>
+        <div class="dash-row">
+          <div class="dash-mini"><div class="dm-num">48</div><div class="dm-lbl">Blogs Today</div></div>
+          <div class="dash-mini"><div class="dm-num">94</div><div class="dm-lbl">SEO Score</div></div>
+          <div class="dash-mini"><div class="dm-num">12K</div><div class="dm-lbl">Views</div></div>
+        </div>
+        <div class="dash-bar-area">
+          <div style="font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:10px">Content Performance</div>
+          <div class="bar-row"><span class="bar-label">Technology</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><span style="font-size:11px;color:var(--tx3)">85%</span></div>
+          <div class="bar-row"><span class="bar-label">Marketing</span><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><span style="font-size:11px;color:var(--tx3)">72%</span></div>
+          <div class="bar-row"><span class="bar-label">Finance</span><div class="bar-track"><div class="bar-fill" style="width:68%"></div></div><span style="font-size:11px;color:var(--tx3)">68%</span></div>
+          <div class="bar-row"><span class="bar-label">Health</span><div class="bar-track"><div class="bar-fill" style="width:91%"></div></div><span style="font-size:11px;color:var(--tx3)">91%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ────────────────────────────────────────── -->
+<section class="features-bg" id="features">
+  <div class="container text-center">
+    <div class="section-tag">Features</div>
+    <h2 class="section-title">Everything You Need to <span class="grad-text">Blog Smarter</span></h2>
+    <p class="section-sub">Powerful AI tools designed to supercharge your content creation workflow</p>
+    <div class="features-grid fade-up">
+      <div class="feat-card">
+        <div class="feat-icon">✏️</div>
+        <h3>AI Blog Generator</h3>
+        <p>Generate complete, well-structured blog posts instantly on any topic you choose.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <h3>Fast Content Creation</h3>
+        <p>Create full-length articles in seconds, not hours. 10x your publishing speed.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📈</div>
+        <h3>SEO Optimization</h3>
+        <p>AI writes search-engine optimized blogs with proper keywords and meta tags.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧠</div>
+        <h3>Smart Topic Suggestions</h3>
+        <p>AI recommends trending topics in your niche to keep your content relevant.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h3>Analytics Dashboard</h3>
+        <p>Track blog performance, views, and SEO rankings from one unified dashboard.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎨</div>
+        <h3>Custom Templates</h3>
+        <p>Choose from multiple professional blog writing styles and tone templates.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEMO ────────────────────────────────────────────── -->
+<section style="background:var(--bg)" id="demo">
+  <div class="container text-center">
+    <div class="section-tag">Live Demo</div>
+    <h2 class="section-title">Try the <span class="grad-text">AI Blog Generator</span></h2>
+    <p class="section-sub">Experience the magic — enter a topic and watch AI generate your blog</p>
+    <div class="demo-box fade-up">
+      <div class="demo-label">Blog Topic</div>
+      <input class="demo-input" id="demoInput" placeholder="e.g. The Future of AI in Digital Marketing..." />
+      <div class="demo-row">
+        <div>
+          <div class="demo-label">Blog Length</div>
+          <select class="demo-select" id="demoLen">
+            <option>Short (300 words)</option>
+            <option selected>Medium (600 words)</option>
+            <option>Long (1200 words)</option>
+          </select>
+        </div>
+        <button class="btn-primary btn-lg" id="genBtn" onclick="generateBlog()" style="height:52px;padding:0 28px;align-self:end">Generate Blog ✨</button>
+      </div>
+      <div class="demo-output" id="demoOutput"></div>
+      <!-- CTA shown after demo generates -->
+      <div class="demo-cta" id="demoCta">
+        <p>👆 Like what you see? Get the full version with SEO optimization, trending keywords & images.</p>
+        <button class="btn-primary" style="padding:10px 24px;font-size:14px;border-radius:8px;cursor:pointer"
+                onclick="Auth.gatedClick('generate.html','Sign up free to access the full AI Blog Generator!')">
+          Generate Full Blog Free →
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ───────────────────────────────────────────── -->
+<section class="stats-section" style="padding:60px 5%">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card fade-up">
+        <div class="emoji">👥</div>
+        <div class="stat-num" data-target="10000" id="s1">0</div>
+        <div class="stat-lbl">Active Users</div>
+      </div>
+      <div class="stat-card fade-up">
+        <div class="emoji">📝</div>
+        <div class="stat-num" data-target="250000" id="s2">0</div>
+        <div class="stat-lbl">Blogs Generated</div>
+      </div>
+      <div class="stat-card fade-up">
+        <div class="emoji">⭐</div>
+        <div class="stat-num" id="s3">4.9</div>
+        <div class="stat-lbl">User Rating</div>
+      </div>
+      <div class="stat-card fade-up">
+        <div class="emoji">🌎</div>
+        <div class="stat-num" data-target="50" id="s4">0</div>
+        <div class="stat-lbl">Countries</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ─────────────────────────────────────────── -->
+<section style="background:var(--bg2)" id="pricing">
+  <div class="container text-center">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-title">Simple, <span class="grad-text">Transparent Pricing</span></h2>
+    <p class="section-sub">Start free, scale as you grow. No hidden fees.</p>
+    <div class="pricing-grid fade-up">
+      <div class="price-card">
+        <div class="plan-name">Basic</div>
+        <p style="font-size:14px;color:var(--tx3)">For individual bloggers</p>
+        <div class="plan-price">Free<span> /month</span></div>
+        <ul class="plan-features">
+          <li>5 blogs per month</li>
+          <li>Basic templates</li>
+          <li>1,000 words per blog</li>
+          <li>Email support</li>
+        </ul>
+        <button class="btn-plan outline"
+                onclick="Auth.gatedClick('dashboard.html','Create your free account to get started!')">
+          Get Started Free
+        </button>
+      </div>
+      <div class="price-card popular">
+        <div class="popular-badge">🔥 Most Popular</div>
+        <div class="plan-name">Pro</div>
+        <p style="font-size:14px;color:var(--tx3)">For content creators</p>
+        <div class="plan-price">$19<span>/month</span></div>
+        <ul class="plan-features">
+          <li>Unlimited blogs</li>
+          <li>SEO optimization</li>
+          <li>AI topic suggestions</li>
+          <li>All templates</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="btn-plan filled"
+                onclick="Auth.gatedClick('dashboard.html?upgrade=pro','Sign up to activate the Pro plan!')">
+          Get Pro Now
+        </button>
+      </div>
+      <div class="price-card">
+        <div class="plan-name">Enterprise</div>
+        <p style="font-size:14px;color:var(--tx3)">For teams & businesses</p>
+        <div class="plan-price">$49<span>/month</span></div>
+        <ul class="plan-features">
+          <li>Team collaboration</li>
+          <li>API access</li>
+          <li>Advanced analytics</li>
+          <li>Custom templates</li>
+          <li>Dedicated account mgr</li>
+        </ul>
+        <button class="btn-plan outline"
+                onclick="Auth.gatedClick('dashboard.html?upgrade=enterprise','Sign up for Enterprise access!')">
+          Contact Sales
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ────────────────────────────────────── -->
+<section class="testimonials-bg">
+  <div class="container text-center">
+    <div class="section-tag">Testimonials</div>
+    <h2 class="section-title">Loved by <span class="grad-text">Thousands</span> of Writers</h2>
+    <div class="testi-slider">
+      <div class="testi-track" id="testiTrack">
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"This AI blogger saves me hours of writing time every week. The content quality is exceptional and the SEO optimization is spot on!"</p>
+          <div class="testi-author">— Sarah K., Content Marketer</div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"Best AI writing platform for bloggers, hands down. The topic suggestions alone have completely transformed my content strategy."</p>
+          <div class="testi-author">— James T., SEO Specialist</div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"Our blog traffic increased by 340% in just 3 months after switching to AI Blogger. Absolutely game-changing for our marketing team."</p>
+          <div class="testi-author">— Priya M., Marketing Director</div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"I was skeptical at first, but the quality of AI-generated content completely blew me away. It writes better than most freelancers I've hired."</p>
+          <div class="testi-author">— Alex R., Startup Founder</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-dots" id="testiDots"></div>
+  </div>
+</section>
+
+<!-- ── BLOG PREVIEW ────────────────────────────────────── -->
+<section style="background:var(--bg)" id="blog">
+  <div class="container text-center">
+    <div class="section-tag">Latest Blogs</div>
+    <h2 class="section-title">Fresh <span class="grad-text">AI-Generated</span> Content</h2>
+    <p class="section-sub">See what our AI creates — high-quality posts across every niche</p>
+    <div class="blog-grid fade-up">
+      <div class="blog-card" onclick="Auth.gatedClick('generate.html','Sign up to read and create full blog posts!')">
+        <div class="blog-img" style="background:linear-gradient(135deg,#EEF0FF,#DDD8FF)">🤖</div>
+        <div class="blog-body">
+          <span class="blog-tag">AI & Tech</span>
+          <h3>AI in Digital Marketing: The Complete 2026 Guide</h3>
+          <p>Discover how artificial intelligence is revolutionizing digital marketing strategies for businesses of all sizes.</p>
+          <span class="read-more">Read More →</span>
+        </div>
+      </div>
+      <div class="blog-card" onclick="Auth.gatedClick('generate.html','Sign up to read and create full blog posts!')">
+        <div class="blog-img" style="background:linear-gradient(135deg,#E6F1FB,#C8E6FF)">📈</div>
+        <div class="blog-body">
+          <span class="blog-tag">SEO</span>
+          <h3>Top 10 SEO Strategies That Actually Work in 2026</h3>
+          <p>Stay ahead of the competition with these proven SEO techniques trusted by top-ranking content creators.</p>
+          <span class="read-more">Read More →</span>
+        </div>
+      </div>
+      <div class="blog-card" onclick="Auth.gatedClick('generate.html','Sign up to read and create full blog posts!')">
+        <div class="blog-img" style="background:linear-gradient(135deg,#F0FFF0,#C8F0C8)">✍️</div>
+        <div class="blog-body">
+          <span class="blog-tag">Content</span>
+          <h3>The Future of AI Content Writing: What's Coming Next</h3>
+          <p>A deep dive into emerging trends in AI content creation and what they mean for bloggers and marketers.</p>
+          <span class="read-more">Read More →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ─────────────────────────────────────────────── -->
+<section style="background:var(--bg2)" id="faq">
+  <div class="container text-center">
+    <div class="section-tag">FAQ</div>
+    <h2 class="section-title">Common <span class="grad-text">Questions</span></h2>
+    <div class="faq-list fade-up">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">What is AI Blogger? <span class="faq-chevron">⌄</span></div>
+        <div class="faq-a">AI Blogger is an intelligent content generation platform that uses advanced AI to automatically create high-quality, SEO-optimized blog posts on any topic in seconds.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Is the AI content SEO friendly? <span class="faq-chevron">⌄</span></div>
+        <div class="faq-a">Yes! Every blog post generated includes proper keyword usage, meta descriptions, heading structure, and internal linking suggestions to maximize your search engine visibility.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Can I edit generated blogs? <span class="faq-chevron">⌄</span></div>
+        <div class="faq-a">Absolutely. Our built-in rich text editor lets you fully customize every AI-generated blog post before publishing. You have complete control over the final content.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">Is there a free plan? <span class="faq-chevron">⌄</span></div>
+        <div class="faq-a">Yes! Our Basic plan is completely free and includes 5 blog posts per month. No credit card required to get started.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q">How accurate is AI content? <span class="faq-chevron">⌄</span></div>
+        <div class="faq-a">Our AI uses the latest language models trained on billions of documents. Content accuracy is high, but we always recommend reviewing AI output before publishing for factual claims.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ─────────────────────────────────────────── -->
+<section style="background:var(--bg)" id="contact">
+  <div class="container">
+    <div class="text-center">
+      <div class="section-tag">Contact</div>
+      <h2 class="section-title">Get in <span class="grad-text">Touch</span></h2>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info fade-up">
+        <h3>We'd love to hear from you</h3>
+        <p>Have questions about AI Blogger? Our support team is available 24/7 to help you get started and make the most of our platform.</p>
+        <div class="contact-detail"><div class="contact-icon">📧</div><span>support@aiblogger.io</span></div>
+        <div class="contact-detail"><div class="contact-icon">💬</div><span>Live chat available 24/7</span></div>
+        <div class="contact-detail"><div class="contact-icon">📍</div><span>San Francisco, CA · Remote-first</span></div>
+        <div class="map-box">🗺️<span>Interactive map · support@aiblogger.io</span></div>
+      </div>
+      <div class="contact-form-box fade-up">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-input" id="contactName" placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="contactEmail" type="email" placeholder="you@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" id="contactMsg" placeholder="How can we help you?"></textarea>
+        </div>
+        <button class="btn-primary" onclick="sendContact()" style="width:100%;padding:14px;font-size:16px;font-weight:600;border-radius:10px;cursor:pointer;font-family:inherit">
+          Send Message ✉️
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <div class="logo-icon" style="width:28px;height:28px">
+          <svg width="14" height="14" viewBox="0 0 18 18" fill="none"><path d="M3 14L7 6L9 10L12 5L15 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        AI Blogger
+      </div>
+      <p class="footer-desc">The world's most powerful AI blog generation platform for creators, marketers and businesses.</p>
+      <div class="social-row">
+        <div class="social-btn">f</div>
+        <div class="social-btn">𝕏</div>
+        <div class="social-btn">in</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>AI Blogger</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">API</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 AI Blogger. All rights reserved. Built with ❤️ for content creators worldwide.</div>
+</footer>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────── -->
+<script>
+// ── 1. INIT AUTH NAV on page load ─────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const loggedIn = Auth.isLoggedIn();
+  const user     = Auth.getUser();
+
+  if (loggedIn && user) {
+    // Show logged-in state
+    document.getElementById('navLoginBtn').style.display  = 'none';
+    document.getElementById('navSignupBtn').style.display = 'none';
+    document.getElementById('navDashBtn').style.display   = 'inline-flex';
+    document.getElementById('navUserMenu').style.display  = 'flex';
+    document.getElementById('navUserName').textContent    = user.name.split(' ')[0];
+    document.getElementById('navAvatar').textContent      = user.name.charAt(0).toUpperCase();
+    document.getElementById('navLogoutBtn').onclick       = () => Auth.logout();
+
+    // Hero: change CTA text for logged-in users
+    document.getElementById('heroStartBtn').textContent = 'Go to Generator →';
+    document.getElementById('heroStartBtn').onclick = () => { window.location.href = 'generate.html'; };
+
+    // Hide auth hint banner
+    document.getElementById('authBanner').classList.remove('show');
+  } else {
+    // Show auth hint banner for guests
+    document.getElementById('authBanner').classList.add('show');
+  }
+});
+
+// ── 2. DARK MODE ──────────────────────────────────────────
+const darkBtn = document.getElementById('darkBtn');
+let isDark = localStorage.getItem('aib_dark') === '1';
+if (isDark) { document.body.classList.add('dark-mode'); darkBtn.textContent = '☀️'; }
+darkBtn.onclick = () => {
+  isDark = !isDark;
+  document.body.classList.toggle('dark-mode', isDark);
+  darkBtn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('aib_dark', isDark ? '1' : '0');
+};
+
+// ── 3. SCROLL ANIMATIONS ──────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// ── 4. COUNTER ANIMATION ──────────────────────────────────
+function animateCounter(el, target, suffix) {
+  let start = 0;
+  const step = target / (2000 / 16);
+  const timer = setInterval(() => {
+    start += step;
+    if (start >= target) { start = target; clearInterval(timer); }
+    el.textContent = start >= 1000 ? Math.round(start).toLocaleString() + (suffix || '') : Math.round(start) + (suffix || '');
+  }, 16);
+}
+const statsObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(document.getElementById('s1'), 10000, '+');
+      animateCounter(document.getElementById('s2'), 250000, '+');
+      animateCounter(document.getElementById('s4'), 50, '+');
+      statsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+statsObserver.observe(document.querySelector('.stats-section'));
+
+// ── 5. TESTIMONIAL SLIDER ─────────────────────────────────
+const track = document.getElementById('testiTrack');
+const dotsContainer = document.getElementById('testiDots');
+const slides = track.querySelectorAll('.testi-card');
+let current = 0;
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'testi-dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsContainer.appendChild(d);
+});
+function goTo(idx) {
+  current = idx;
+  track.style.transform = `translateX(-${idx * 100}%)`;
+  document.querySelectorAll('.testi-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+setInterval(() => goTo((current + 1) % slides.length), 4000);
+
+// ── 6. FAQ ────────────────────────────────────────────────
+function toggleFaq(item) {
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+// ── 7. DEMO GENERATOR (public preview — limited) ──────────
+const sampleOutputs = {
+  short: "Artificial intelligence is reshaping how we approach digital marketing. From personalized content to predictive analytics, AI tools now allow marketers to reach the right audience at exactly the right moment. Brands using AI see up to 40% higher conversion rates and significantly lower cost-per-acquisition. The future of marketing is here — and it's powered by AI.",
+  medium: "Artificial intelligence is no longer a futuristic concept — it's the backbone of modern digital marketing strategy.\n\n**Why AI Matters in 2026**\n\nWith consumer attention spans shrinking and competition intensifying across every channel, marketers need smarter tools. AI-powered platforms now analyze billions of data points in real time, enabling hyper-personalized campaigns that feel tailor-made for each user.\n\n**Key Applications**\n\nFrom chatbots and content generation to predictive lead scoring and dynamic ad optimization, AI touches every part of the marketing funnel. Companies leveraging AI report 35–50% increases in campaign ROI.\n\n**Getting Started**\n\nThe barrier to entry has never been lower. Platforms like AI Blogger, HubSpot AI, and Jasper give even small teams enterprise-level capabilities. Start with one use case, measure results, and scale.",
+  long: "## The Complete Guide to AI in Digital Marketing (2026)\n\nArtificial intelligence has fundamentally transformed digital marketing, and in 2026, adopting AI isn't optional — it's survival.\n\n### The AI Marketing Revolution\n\nJust three years ago, AI in marketing meant basic automation. Today, it means autonomous campaign management, real-time personalization at scale, and predictive customer journey mapping that anticipates needs before customers even articulate them.\n\n### 7 Ways AI is Changing Marketing\n\n1. **Content Generation** — AI writes first drafts, optimizes for SEO, and adapts tone for different audiences automatically.\n2. **Predictive Analytics** — Machine learning models forecast customer churn, purchase intent, and lifetime value with 85%+ accuracy.\n3. **Hyper-Personalization** — Every email, ad, and landing page dynamically adapts to the individual viewer.\n4. **Chatbots & Conversational AI** — 24/7 customer engagement that feels genuinely human.\n5. **Ad Optimization** — AI continuously A/B tests and reallocates budget toward highest-performing creatives.\n6. **Social Listening** — Real-time brand sentiment analysis across millions of posts.\n7. **Email Marketing** — AI determines optimal send times, subject lines, and content for each subscriber.\n\n### The ROI Case\n\nBusinesses using AI marketing tools report average ROI improvements of 40-120% within 12 months of deployment.\n\n### Conclusion\n\nAI in digital marketing isn't coming — it's here. The brands that embrace it now will define the next decade of commerce."
+};
+
+function generateBlog() {
+  const topic = document.getElementById('demoInput').value.trim();
+  const len   = document.getElementById('demoLen').value;
+  const output = document.getElementById('demoOutput');
+  const btn   = document.getElementById('genBtn');
+  if (!topic) { document.getElementById('demoInput').focus(); return; }
+
+  btn.textContent = '⏳ Generating...';
+  btn.disabled    = true;
+  output.className = 'demo-output active';
+  document.getElementById('demoCta').classList.remove('show');
+  output.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--tx3);font-size:14px"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div> AI is writing your blog post...</div>';
+
+  const key  = len.includes('Short') ? 'short' : len.includes('Long') ? 'long' : 'medium';
+  const text = sampleOutputs[key];
+
+  setTimeout(() => {
+    let displayed = '', i = 0;
+    const timer = setInterval(() => {
+      displayed += text[i] || '';
+      i++;
+      output.innerHTML = `<div style="white-space:pre-wrap;font-size:14px;line-height:1.8;color:var(--tx2)">${displayed
+        .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+        .replace(/^##\s(.+)$/gm,'<h3 style="font-size:16px;font-weight:700;color:var(--tx);margin:12px 0 6px">$1</h3>')
+        .replace(/^###\s(.+)$/gm,'<h4 style="font-size:14px;font-weight:700;color:var(--tx);margin:10px 0 4px">$1</h4>')
+      }<span class="cursor-blink"></span></div>`;
+      if (i >= text.length) {
+        clearInterval(timer);
+        btn.textContent = 'Generate Blog ✨';
+        btn.disabled    = false;
+        // Show upgrade CTA after demo completes
+        document.getElementById('demoCta').classList.add('show');
+      }
+    }, 12);
+  }, 1200);
+}
+document.getElementById('demoInput').addEventListener('keydown', e => { if (e.key === 'Enter') generateBlog(); });
+
+// ── 8. CONTACT FORM ───────────────────────────────────────
+function sendContact() {
+  const name  = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const msg   = document.getElementById('contactMsg').value.trim();
+  if (!name || !email || !msg) { alert('Please fill in all fields.'); return; }
+  // In production: POST to /api/v1/contact
+  alert(`Thanks ${name}! We'll reply to ${email} within 24 hours. ✉️`);
+  document.getElementById('contactName').value  = '';
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactMsg').value   = '';
+}
+</script>
+
+<!-- API config -->
+<script>
+  window.AI_BLOGGER_API = 'http://localhost:5000/api/v1';
+</script>
+</body>
+</html>
