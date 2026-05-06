@@ -1,4 +1,4 @@
-modules = ["nodejs-20"]
+modules = ["nodejs-20", "python-3.11"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
@@ -44,6 +44,10 @@ outputType = "console"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd ai-blogger-backend && node src/server.js"
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000
