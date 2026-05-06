@@ -6,7 +6,7 @@
 <title>AI Blog Generator — AI Blogger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
+<style type="text/css">
 /* ── Reset & Root ───────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -679,7 +679,7 @@ function generateRelatedTrends(topic) {
 function renderTrends(trends, topic, source) {
   const panel = document.getElementById('trendsPanel');
   const grid = document.getElementById('trendsGrid');
-  const srcLabel = source === 'google_trends' ? '📈 Google Trends' : source === 'fallback' ? '⚡ Smart Suggestions' : '💡 Suggestions';
+  const srcLabel = source === 'google_trends' ? '📈 Google Trends' : source === 'ai' ? '🤖 AI-Powered Trends' : source === 'fallback' ? '⚡ Smart Suggestions' : '💡 Suggestions';
   document.getElementById('trendsSource').textContent = `${srcLabel} — related to "${topic}"`;
   document.getElementById('trendsCount').textContent = `${state.selectedKeywords.length}/5 selected`;
   panel.classList.add('show');
@@ -1127,6 +1127,20 @@ document.getElementById('topicInput').addEventListener('keydown', e => {
 
 window.UNSPLASH_ACCESS_KEY = 'x7_Yh96zEWPUZqpx--UmEvzgw1YQtXXplSKM5Cs6b1Y';
 window.AI_BLOGGER_API      = 'http://localhost:3000/api/v1';
+
+// Expose all onclick-referenced functions to global scope
+// (required because Vite treats inline scripts as modules)
+window.fetchTrends    = fetchTrends;
+window.clearKeywords  = clearKeywords;
+window.setToggle      = setToggle;
+window.getToggle      = getToggle;
+window.updateRange    = updateRange;
+window.generateBlog   = generateBlog;
+window.copyBlog       = copyBlog;
+window.downloadBlog   = downloadBlog;
+window.regenerate     = regenerate;
+window.toggleKeyword  = toggleKeyword;
+window.removeKeyword  = removeKeyword;
 </script>
 </body>
 </html>
