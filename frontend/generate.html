@@ -556,11 +556,28 @@ async function fetchTrends() {
   btn.classList.add('loading');
   btn.disabled = true;
 
-  // Simulate network delay (in production: call your backend /ai/trending endpoint)
-  await delay(1200);
+  try {
+    const API = window.AI_BLOGGER_API || 'http://localhost:3000/api/v1';
+    const res = await fetch(`${API}/trends?keyword=${encodeURIComponent(topic)}`);
+    if (!res.ok) throw new Error('API error');
+    const json = await res.json();
 
-  const trends = generateRelatedTrends(topic);
-  renderTrends(trends, topic);
+    if (json.success && json.data && json.data.length > 0) {
+      const normalized = json.data.map(item => ({
+        kw:    item.keyword,
+        vol:   item.volume,
+        score: item.score,
+        type:  item.type,
+      }));
+      renderTrends(normalized, topic, json.source);
+    } else {
+      throw new Error('Empty response');
+    }
+  } catch (err) {
+    // Fallback to local generation if backend is unreachable
+    const trends = generateRelatedTrends(topic);
+    renderTrends(trends, topic, 'local');
+  }
 
   btn.classList.remove('loading');
   btn.disabled = false;
@@ -659,10 +676,11 @@ function generateRelatedTrends(topic) {
   return generics;
 }
 
-function renderTrends(trends, topic) {
+function renderTrends(trends, topic, source) {
   const panel = document.getElementById('trendsPanel');
   const grid = document.getElementById('trendsGrid');
-  document.getElementById('trendsSource').textContent = `— related to "${topic}"`;
+  const srcLabel = source === 'google_trends' ? '📈 Google Trends' : source === 'fallback' ? '⚡ Smart Suggestions' : '💡 Suggestions';
+  document.getElementById('trendsSource').textContent = `${srcLabel} — related to "${topic}"`;
   document.getElementById('trendsCount').textContent = `${state.selectedKeywords.length}/5 selected`;
   panel.classList.add('show');
   grid.innerHTML = '';
@@ -775,7 +793,7 @@ async function generateBlog() {
 // ── Backend Call ──────────────────────────────────────────
 async function callBackendGenerate(config) {
   const token = localStorage.getItem('token');
-  const API = window.AI_BLOGGER_API = "http://localhost:5000/api/v1";
+  const API = window.AI_BLOGGER_API || 'http://localhost:3000/api/v1';
   const res = await fetch(`${API}/ai/generate`, {
     method: 'POST',
     headers: { 'Content-Type':'application/json', ...(token ? {Authorization:`Bearer ${token}`} : {}) },
@@ -1108,7 +1126,7 @@ document.getElementById('topicInput').addEventListener('keydown', e => {
 });
 
 window.UNSPLASH_ACCESS_KEY = 'x7_Yh96zEWPUZqpx--UmEvzgw1YQtXXplSKM5Cs6b1Y';
-window.AI_BLOGGER_API      = 'http://localhost:5000/api/v1';
+window.AI_BLOGGER_API      = 'http://localhost:3000/api/v1';
 </script>
 </body>
 </html>
